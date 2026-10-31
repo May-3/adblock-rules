@@ -1,9 +1,9 @@
 #!name=跳广告合集·自维护合并版
-#!desc=最后修改时间：2026-10-31 19:38（北京时间，UTC+8）；adultraplus + blockAds 合并去重，含 B站开屏条目停用修复（2026-10-31真机验证）、腾讯优量汇补强规则与 QUIC 拦截。更新记录见下
-#!author=自维护(原始规则: yfamilys/fmz200)
+#!desc=adultraplus + blockAds 合并去重,自维护。
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
+#最后修改时间：2026-10-31 20:34（北京时间，UTC+8）
 
 [Rule]
 # >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
@@ -21,15 +21,31 @@ DOMAIN-SUFFIX,tangram.qq.com,REJECT
 DOMAIN-SUFFIX,bdvivid.com,REJECT
 # 京东
 DOMAIN-SUFFIX,im-x.jd.com,REJECT
-# 养基宝
+# > 养基宝第三方广告平台补齐（2026-10-31 真机抓包证实漏网，此前误放 [Script] 区不生效）
 DOMAIN-SUFFIX,atdplus.cn,REJECT
 DOMAIN-SUFFIX,shenshiads.com,REJECT
 DOMAIN-SUFFIX,ad-scope.com.cn,REJECT
-DOMAIN-SUFFIX,shenshiads.com,REJECT
 DOMAIN-SUFFIX,adn-plus.com.cn,REJECT
 DOMAIN-SUFFIX,sigmob.cn,REJECT
 DOMAIN-SUFFIX,etoolads.cn,REJECT
+# > 注意：hubcloud.com.cn 下有其他 app 的正常业务域名（如 res1.hubcloud.com.cn），
 DOMAIN-SUFFIX,hubcloud.com.cn,REJECT
+# > 百度网盘第三方广告 SDK 补齐（2026-10-31 依据官方第三方清单核查）
+DOMAIN-SUFFIX,zsmobi.com,REJECT
+DOMAIN-SUFFIX,mentamob.com,REJECT
+DOMAIN-SUFFIX,ubixai.com,REJECT
+# > 百度网盘抓包二次补漏（2026-10-31 20:17 真机抓包证实直连漏网）
+#   Menta 芒拓的回调上报域（官方清单只写了 mentamob.com，实际还走 advlion.com）
+DOMAIN-SUFFIX,advlion.com,REJECT
+#   微博系广告 ADX
+DOMAIN-SUFFIX,vlion.cn,REJECT
+#   CPC 广告服务（多个子域命中：usr-api/service/logrcv/tracelog-debug/cpc-service-square）
+DOMAIN-SUFFIX,yunxish.com,REJECT
+#   监测/归因/设备ID
+DOMAIN-SUFFIX,66mobi.com,REJECT
+DOMAIN-SUFFIX,app-analytics-services.com,REJECT
+DOMAIN,cpc-service-square.iggrowth.cn,REJECT
+DOMAIN,tdid.m.qq.com,REJECT
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # ----- 来源: blockAds.module -----
