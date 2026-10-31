@@ -1,5 +1,5 @@
 # adblock-rules
-自维护的 iOS 去广告模块（Surge / Loon / Stash 通用 .module 格式）。
+自维护的 iOS 去广告模块（.module 格式）。
 
 文件说明
 - merged-skip-ads.module —— 主文件，由以下两个上游项目合并去重并补强：
