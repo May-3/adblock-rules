@@ -3,8 +3,8 @@
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
-#最后修改时间：2026-10-31 20:55（北京时间，UTC+8）
-#更新记录：20:55 百度网盘补漏——新增 cpc-service-square.58iclick.com 域名规则、/act/api/activitystatus 路径 mock；20:50 百度网盘 /buy/ad/ 路径 mock、advlion/vlion/66mobi/yunxish 等域名补漏；20:26 养基宝规则从 [Script] 区移回 [Rule] 区修复不生效问题
+#最后修改时间：2026-10-31 21:06（北京时间，UTC+8）
+#更新记录：21:06 补 webcast-open.douyin.com 穿山甲配置路径 mock（仅网盘包名）与 pan.baidu.com/api/analytics 竞价统计 mock；21:01 cpc-service-square 三条精确域名合并为 DOMAIN-KEYWORD 通配（防换域）；20:55 百度网盘补漏——58iclick 域名规则、activitystatus 路径 mock；20:50 /buy/ad/ 路径 mock、advlion/vlion/66mobi/yunxish 等补漏；20:26 养基宝规则从 [Script] 区移回 [Rule] 区
 
 [Rule]
 # >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
@@ -45,10 +45,10 @@ DOMAIN-SUFFIX,yunxish.com,REJECT
 #   监测/归因/设备ID
 DOMAIN-SUFFIX,66mobi.com,REJECT
 DOMAIN-SUFFIX,app-analytics-services.com,REJECT
-DOMAIN,cpc-service-square.iggrowth.cn,REJECT
 DOMAIN,tdid.m.qq.com,REJECT
-# > CPC 广告服务第三次换域（2026-10-31 20:53 百度网盘抓包）
-DOMAIN,cpc-service-square.58iclick.com,REJECT
+# > CPC 广告服务会轮换域名规避拦截（已见 yunxish/iggrowth/58iclick 三家），
+#   改用关键字一条通配所有换域（2026-10-31 21:01 确认工具支持 DOMAIN-KEYWORD）
+DOMAIN-KEYWORD,cpc-service-square,REJECT
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # ----- 来源: blockAds.module -----
@@ -3798,6 +3798,11 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 ^https?:\/\/pan\.baidu\.com\/buy\/ad\/get reject-200
 ^https?:\/\/pan\.baidu\.com\/buy\/ad\/conf reject-200
 ^https?:\/\/pan\.baidu\.com\/buy\/ad\/analytics reject
+# > 穿山甲 SDK 远程配置走抖音开放平台域（2026-10-31 20:58 抓包发现；
+#   仅匹配 package_name=com.baidu.netdisk，不影响其他 App 的抖音开放平台请求）
+^https?:\/\/webcast-open\.douyin\.com\/webcast\/openapi\/pangle\/setting\/?\?(?:[^#]*&)?package_name=com\.baidu\.netdisk(?:&|$) - reject
+# > 网盘自家 analytics 接口上报穿山甲竞价曝光统计（仅匹配 iOS_bidding_pv 类型）
+^https?:\/\/pan\.baidu\.com\/api\/analytics\?(?:[^#]*&)?type=iOS_bidding_pv_iphone(?:&|$) - reject
 ^https?:\/\/pan-api\.bitqiu\.com\/activity\/getPromoteGuide reject-200
 ^https?:\/\/pan-api\.bitqiu\.com\/activity\/getPromoteGuide reject
 ^https?:\/\/pagead2\.googlesyndication\.com\/pagead\/ reject-img
