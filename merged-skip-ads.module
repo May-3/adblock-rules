@@ -4,7 +4,18 @@
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
 #最后修改时间：2026-10-31 22:59（北京时间，UTC+8）
-#更新记录：22:59 删除腾讯视频素材ID精确规则与 svp_1050/gzc_1000173 试验规则（两App重装后广告清零，一次性规则不再需要）；22:56 全文件体检整理；22:49 苹果系统更新域直连；21:39-21:53 腾讯视频域名补漏+分片拦截；20:50-21:18 百度网盘域名与路径补漏；20:26 养基宝规则移回 [Rule] 区
+#更新记录（新→旧）：
+# 22:59 删除腾讯视频素材ID精确规则与 svp_1050/gzc_1000173 试验规则（两App重装后广告清零）
+# 22:56 全文件体检整理：0重复/0错位/0冲突，自维护段按 App 分组
+# 22:49 苹果系统更新域直连（mesu/gdmf/xp.apple.com，修复"无法检查更新"）
+# 21:53 腾讯视频：广告视频分片按素材ID精确拦截 + galileotelemetry 遥测拦截
+# 21:39 腾讯视频域名补漏：iacc / mdt(KEYWORD) / df.tanx / rdelivery / snowflake
+# 21:18 百度网盘：/api/resource/prefetch 素材预取 mock
+# 21:10 百度网盘：memberact/activity 运营位 mock
+# 21:06 百度网盘：webcast-open 穿山甲配置 mock + analytics 竞价统计 mock
+# 21:01 百度网盘：cpc-service-square 合并为 DOMAIN-KEYWORD 通配（防换域）
+# 20:50-20:55 百度网盘：/buy/ad/ 路径 mock 及域名补漏（advlion/vlion/yunxish/66mobi 等）
+# 20:26 养基宝：规则从 [Script] 区移回 [Rule] 区（修复不生效）+ 域名补漏
 
 [Rule]
 # >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
