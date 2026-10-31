@@ -11,14 +11,14 @@
   - HTTP/3(QUIC) 阻断规则，防止广告 SDK 走 UDP 443 绕过 MITM
     
 安装
-在 Surge / Loon / Stash /小火箭中通过 URL 安装模块：
-https://raw.githubusercontent.com/<用户名>/<仓库名>/main/merged-skip-ads.module
-国内可换 jsDelivr 加速：
-https://cdn.jsdelivr.net/gh/<用户名>/<仓库名>@main/merged-skip-ads.module
+- 在 Surge / Loon / Stash /小火箭中通过 URL 安装模块：
+  - https://raw.githubusercontent.com/May-3/adblock-rules/main/merged-skip-ads.module
+- 国内可换 jsDelivr 加速：
+  - https://cdn.jsdelivr.net/gh/May-3/adblock-rules@main/merged-skip-ads.module
 维护
 - 规则按 APP 分组注释，新增规则时同步把主机名加进 [MITM] hostname
 - 某条规则导致 APP 异常时，把 reject 换成 reject-dict 或 reject-200 试试
 - 拦不住已显示的开屏广告：清该 APP 缓存或重装（广告素材已本地缓存）
-- 
+
 许可证
-GPL-3.0。规则源自上述社区项目（wool_scripts 为 GPL-3.0），衍生分发遵循相同许可证，感谢原作者。
+- GPL-3.0。规则源自上述社区项目（wool_scripts 为 GPL-3.0），衍生分发遵循相同许可证，感谢原作者。
