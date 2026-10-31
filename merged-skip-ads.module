@@ -3,8 +3,8 @@
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
-#最后修改时间：2026-10-31 21:39（北京时间，UTC+8）
-#更新记录：21:39 腾讯视频补漏——iacc.qq.com 自家广告接口、mdt.qq.com 监测(KEYWORD)、df.tanx.com、rdelivery.qq.com 运营下发、snowflake.qq.com 设备ID；21:18 百度网盘 prefetch 素材预取 mock；21:10 memberact 运营位 mock；21:06 webcast-open 穿山甲配置 mock；21:01 cpc-service-square 合并 KEYWORD 通配；20:50-20:55 /buy/ad/ 路径 mock 及域名补漏；20:26 养基宝规则移回 [Rule] 区
+#最后修改时间：2026-10-31 21:53（北京时间，UTC+8）
+#更新记录：21:53 腾讯视频——广告视频分片(裸IP+omts路径)按素材ID精确拦截，svp_1050/gzc_1000173 通用试验规则默认注释待对照验证，补 galileotelemetry 遥测；21:39 腾讯视频域名补漏（iacc/mdt/df.tanx/rdelivery/snowflake）；21:18 百度网盘 prefetch mock；21:10 memberact mock；21:06 webcast-open 穿山甲配置 mock；21:01 cpc-service-square KEYWORD 通配；20:50-20:55 /buy/ad/ mock 及域名补漏；20:26 养基宝规则移回 [Rule] 区
 
 [Rule]
 # >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
@@ -61,6 +61,8 @@ DOMAIN-SUFFIX,df.tanx.com,REJECT
 DOMAIN-SUFFIX,rdelivery.qq.com,REJECT
 #   腾讯雪花设备 ID（广告/追踪配套）
 DOMAIN,snowflake.qq.com,REJECT
+#   伽利略遥测（腾讯通用埋点；anti-AD 社区列表已收录，2026-10-31 21:41 抓包 11 次直连）
+DOMAIN,galileotelemetry.tencent.com,REJECT
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # ----- 来源: blockAds.module -----
@@ -3822,6 +3824,14 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 ^https?:\/\/webcast-open\.douyin\.com\/webcast\/openapi\/pangle\/setting\/?\?(?:[^#]*&)?package_name=com\.baidu\.netdisk(?:&|$) - reject
 # > 网盘自家 analytics 接口上报穿山甲竞价曝光统计（仅匹配 iOS_bidding_pv 类型）
 ^https?:\/\/pan\.baidu\.com\/api\/analytics\?(?:[^#]*&)?type=iOS_bidding_pv_iphone(?:&|$) - reject
+# > 腾讯视频广告视频分片（2026-10-31 21:41 抓包：广告封面 adsmind.gdtimg.com 被拦后，
+#   分片仍以裸 IP 为主机、omts.tc.qq.com 为路径拉取，素材ID 0b53k4a2iaab6yagc45scfvbwvyeurlqdjca）
+^http://(?:[0-9]{1,3}\.){3}[0-9]{1,3}/omts\.tc\.qq\.com/[^?]*_0b53k4a2iaab6yagc45scfvbwvyeurlqdjca\.f[0-9.]+\.ts(?:\.m3u8)?(?:\?|$) reject
+# > 【试验规则，默认关闭】广告分片通用特征：svp_1050 / gzc_1000173。
+#   正片取流可能共用同一路径特征，误拦会导致视频无法播放。
+#   启用方法：广告出现时取消注释，若正片可正常播放则保留；若正片黑屏则重新注释。
+# ^http://(?:[0-9]{1,3}\.){3}[0-9]{1,3}/omts\.tc\.qq\.com/[^?]*\/svp_1050\/ reject
+# ^http://(?:[0-9]{1,3}\.){3}[0-9]{1,3}/omts\.tc\.qq\.com/[^?]*gzc_1000173_[^?]*\.ts(?:\.m3u8)?(?:\?|$) reject
 ^https?:\/\/pan-api\.bitqiu\.com\/activity\/getPromoteGuide reject-200
 ^https?:\/\/pan-api\.bitqiu\.com\/activity\/getPromoteGuide reject
 ^https?:\/\/pagead2\.googlesyndication\.com\/pagead\/ reject-img
