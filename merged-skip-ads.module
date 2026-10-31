@@ -3,8 +3,8 @@
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
-#最后修改时间：2026-10-31 21:10（北京时间，UTC+8）
-#更新记录：21:10 补 /rest/2.0/memberact/activity 运营位 mock（会员页异常时删该行回滚）；21:06 补 webcast-open.douyin.com 穿山甲配置路径 mock（仅网盘包名）与 analytics 竞价统计 mock；21:01 cpc-service-square 合并为 DOMAIN-KEYWORD 通配；20:50-20:55 百度网盘 /buy/ad/ 路径 mock 及域名补漏；20:26 养基宝规则移回 [Rule] 区
+#最后修改时间：2026-10-31 21:18（北京时间，UTC+8）
+#更新记录：21:18 补 /api/resource/prefetch 素材预取 mock（开屏广告素材预缓存源头）；21:10 补 memberact/activity 运营位 mock；21:06 补 webcast-open 穿山甲配置与 analytics 竞价统计 mock；21:01 cpc-service-square 合并为 DOMAIN-KEYWORD；20:50-20:55 /buy/ad/ 路径 mock 及域名补漏；20:26 养基宝规则移回 [Rule] 区
 
 [Rule]
 # >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
@@ -3795,6 +3795,10 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 # > 会员活动运营位（2026-10-31 21:08 抓包：其余广告路径全封后仍见运营弹窗的最后嫌疑接口）
 #   ⚠️ 若"会员中心/活动页"出现空白或异常，删除下面这行即可回滚
 ^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/memberact\/activity reject-200
+# > 开屏素材预取接口（2026-10-31 21:08 抓包：素材经此接口提前缓存到本地，
+#   导致冷启动时无网络请求也播广告；mock 后不再预取）
+#   ⚠️ 若发现某些功能资源加载变慢/异常，删除下面这行即可回滚
+^https?:\/\/pan\.baidu\.com\/api\/resource\/prefetch reject-200
 ^https?:\/\/pan\.baidu\.com\/act\/.+\/bchannel\/list reject
 # > 百度网盘自家广告系统接口（2026-10-31 20:17 抓包发现：广告走主域 /buy/ad/ 路径，
 #   域名规则无法拦截，按路径 mock 空响应让 App 判定无广告）
