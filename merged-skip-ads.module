@@ -3,26 +3,28 @@
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
-#最后修改时间：2026-10-31 21:53（北京时间，UTC+8）
-#更新记录：21:53 腾讯视频——广告视频分片(裸IP+omts路径)按素材ID精确拦截，svp_1050/gzc_1000173 通用试验规则默认注释待对照验证，补 galileotelemetry 遥测；21:39 腾讯视频域名补漏（iacc/mdt/df.tanx/rdelivery/snowflake）；21:18 百度网盘 prefetch mock；21:10 memberact mock；21:06 webcast-open 穿山甲配置 mock；21:01 cpc-service-square KEYWORD 通配；20:50-20:55 /buy/ad/ mock 及域名补漏；20:26 养基宝规则移回 [Rule] 区
+#最后修改时间：2026-10-31 22:59（北京时间，UTC+8）
+#更新记录：22:59 删除腾讯视频素材ID精确规则与 svp_1050/gzc_1000173 试验规则（两App重装后广告清零，一次性规则不再需要）；22:56 全文件体检整理；22:49 苹果系统更新域直连；21:39-21:53 腾讯视频域名补漏+分片拦截；20:50-21:18 百度网盘域名与路径补漏；20:26 养基宝规则移回 [Rule] 区
 
 [Rule]
 # >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
-# > 阻断 HTTP/3(QUIC)：腾讯优量汇/B站等 SDK 会走 UDP 443 绕过 MITM 拦截，
-#   屏蔽后客户端自动回退 TCP，规则即可生效（ Surge/Loon 语法；
+# ============================================================
+# 一、全局基础设施
+# ============================================================
+# > 阻断 HTTP/3(QUIC)：广告 SDK 会走 UDP 443 绕过 MITM 拦截，
+#   屏蔽后客户端自动回退 TCP，规则即可生效（Surge/Loon 语法；
 #   若你的工具报错，把 DEST-PORT 改成 DST-PORT 或注释掉本行）
 AND,((NETWORK,UDP),(DEST-PORT,443)),REJECT
-# > 腾讯优量汇(GDT)广告素材 CDN —— 断掉已缓存开屏广告的素材加载
-DOMAIN-SUFFIX,gdtimg.com,REJECT
-DOMAIN-SUFFIX,ugdtimg.com,REJECT
-# > 腾讯开屏广告兜底补充域名
-DOMAIN-SUFFIX,adsmind.qq.com,REJECT
-DOMAIN-SUFFIX,tangram.qq.com,REJECT
-# 百青藤：视频素材 CDN
-DOMAIN-SUFFIX,bdvivid.com,REJECT
-# 京东
-DOMAIN-SUFFIX,im-x.jd.com,REJECT
-# > 养基宝第三方广告平台补齐（2026-10-31 真机抓包证实漏网，此前误放 [Script] 区不生效）
+# > 苹果系统更新直连（2026-10-31 真机"无法检查更新"：更新域走代理节点报错，
+#   中国区苹果有官方 CDN，直连即可）
+DOMAIN-SUFFIX,mesu.apple.com,DIRECT
+DOMAIN-SUFFIX,gdmf.apple.com,DIRECT
+DOMAIN-SUFFIX,xp.apple.com,DIRECT
+
+# ============================================================
+# 二、养基宝（深圳小多头）—— 2026-10-31 真机抓包证实漏网
+#     （此前 8 条规则误放 [Script] 区导致不生效，已移回本区）
+# ============================================================
 DOMAIN-SUFFIX,atdplus.cn,REJECT
 DOMAIN-SUFFIX,shenshiads.com,REJECT
 DOMAIN-SUFFIX,ad-scope.com.cn,REJECT
@@ -30,39 +32,59 @@ DOMAIN-SUFFIX,adn-plus.com.cn,REJECT
 DOMAIN-SUFFIX,sigmob.cn,REJECT
 DOMAIN-SUFFIX,etoolads.cn,REJECT
 # > 注意：hubcloud.com.cn 下有其他 app 的正常业务域名（如 res1.hubcloud.com.cn），
+#   如发现某 app 功能异常，把上一行改回精确拦截：DOMAIN,sdktmp.hubcloud.com.cn,REJECT
 DOMAIN-SUFFIX,hubcloud.com.cn,REJECT
-# > 百度网盘第三方广告 SDK 补齐（2026-10-31 依据官方第三方清单核查）
+
+# ============================================================
+# 三、百度网盘 —— 依据官方第三方 SDK 清单 + 两轮真机抓包
+# ============================================================
 DOMAIN-SUFFIX,zsmobi.com,REJECT
 DOMAIN-SUFFIX,mentamob.com,REJECT
 DOMAIN-SUFFIX,ubixai.com,REJECT
-# > 百度网盘抓包二次补漏（2026-10-31 20:17 真机抓包证实直连漏网）
-#   Menta 芒拓的回调上报域（官方清单只写了 mentamob.com，实际还走 advlion.com）
+# > Menta 芒拓的回调上报域（官方清单只写 mentamob.com，实际还走 advlion.com）
 DOMAIN-SUFFIX,advlion.com,REJECT
-#   微博系广告 ADX
+# > 微博系广告 ADX
 DOMAIN-SUFFIX,vlion.cn,REJECT
-#   CPC 广告服务（多个子域命中：usr-api/service/logrcv/tracelog-debug/cpc-service-square）
+# > CPC 广告服务（usr-api/service/logrcv/tracelog-debug/cpc-service-square 多子域命中）
 DOMAIN-SUFFIX,yunxish.com,REJECT
-#   监测/归因/设备ID
+# > 监测/归因/设备 ID
 DOMAIN-SUFFIX,66mobi.com,REJECT
 DOMAIN-SUFFIX,app-analytics-services.com,REJECT
 DOMAIN,tdid.m.qq.com,REJECT
 # > CPC 广告服务会轮换域名规避拦截（已见 yunxish/iggrowth/58iclick 三家），
-#   改用关键字一条通配所有换域（2026-10-31 21:01 确认工具支持 DOMAIN-KEYWORD）
+#   改用关键字一条通配所有换域（2026-10-31 确认工具支持 DOMAIN-KEYWORD）
 DOMAIN-KEYWORD,cpc-service-square,REJECT
-# > 腾讯视频（2026-10-31 21:34 真机抓包补漏）
-#   自家广告投放接口（iacc = 腾讯视频广告中心）
+
+# ============================================================
+# 四、腾讯视频 —— 2026-10-31 21:34 真机抓包补漏
+# ============================================================
+# > 自家广告投放接口（iacc = 腾讯视频广告中心）
 DOMAIN-SUFFIX,iacc.qq.com,REJECT
 DOMAIN,iacc.rec.qq.com,REJECT
-#   腾讯广告监测（与上游已拦的 oth.str/oth.eve.mdt 同系，关键字覆盖全部子域）
+# > 腾讯广告监测（与上游已拦的 oth.str/oth.eve.mdt 同系，关键字覆盖全部子域）
 DOMAIN-KEYWORD,mdt.qq.com,REJECT
-#   阿里妈妈 Tanx ADX 上报（与上游已拦的 ef-dongfeng.tanx.com 同系）
+# > 阿里妈妈 Tanx ADX 上报（与上游已拦的 ef-dongfeng.tanx.com 同系）
 DOMAIN-SUFFIX,df.tanx.com,REJECT
-#   腾讯运营配置下发（开屏运营弹窗/活动配置走这里；其他腾讯系 App 的运营弹窗也会被拦）
+# > 腾讯运营配置下发（开屏运营弹窗/活动配置；其他腾讯系 App 的运营弹窗也会被拦）
 DOMAIN-SUFFIX,rdelivery.qq.com,REJECT
-#   腾讯雪花设备 ID（广告/追踪配套）
+# > 腾讯雪花设备 ID（广告/追踪配套）
 DOMAIN,snowflake.qq.com,REJECT
-#   伽利略遥测（腾讯通用埋点；anti-AD 社区列表已收录，2026-10-31 21:41 抓包 11 次直连）
+# > 伽利略遥测（腾讯通用埋点；anti-AD 社区列表已收录）
 DOMAIN,galileotelemetry.tencent.com,REJECT
+
+# ============================================================
+# 五、跨 App 通用补漏
+# ============================================================
+# > 优量汇(GDT)广告素材 CDN —— 断掉已缓存开屏广告的素材加载
+DOMAIN-SUFFIX,gdtimg.com,REJECT
+DOMAIN-SUFFIX,ugdtimg.com,REJECT
+# > 腾讯开屏广告兜底补充域名
+DOMAIN-SUFFIX,adsmind.qq.com,REJECT
+DOMAIN-SUFFIX,tangram.qq.com,REJECT
+# > 百青藤视频素材 CDN
+DOMAIN-SUFFIX,bdvivid.com,REJECT
+# > 京东 IM 消息网关（养基宝抓包出现；京东广告 SDK 附带组件，对第三方 App 无正常用途）
+DOMAIN-SUFFIX,im-x.jd.com,REJECT
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # ----- 来源: blockAds.module -----
@@ -1719,7 +1741,6 @@ DOMAIN-KEYWORD,trace.qq.com,REJECT
 DOMAIN-KEYWORD,trace.video.qq.com,REJECT
 DOMAIN-SUFFIX,gdt.qq.com,REJECT
 DOMAIN-SUFFIX,l.qq.com,REJECT
-DOMAIN-SUFFIX,ugdtimg.com,REJECT
 IP-CIDR,47.110.187.87/32,REJECT,no-resolve
 DOMAIN,cnlogs.umeng.com,REJECT
 DOMAIN,errlog.umeng.com,REJECT
@@ -3823,15 +3844,11 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 #   仅匹配 package_name=com.baidu.netdisk，不影响其他 App 的抖音开放平台请求）
 ^https?:\/\/webcast-open\.douyin\.com\/webcast\/openapi\/pangle\/setting\/?\?(?:[^#]*&)?package_name=com\.baidu\.netdisk(?:&|$) - reject
 # > 网盘自家 analytics 接口上报穿山甲竞价曝光统计（仅匹配 iOS_bidding_pv 类型）
+# > 网盘自家 analytics 接口上报穿山甲竞价曝光统计（仅匹配 iOS_bidding_pv 类型）
 ^https?:\/\/pan\.baidu\.com\/api\/analytics\?(?:[^#]*&)?type=iOS_bidding_pv_iphone(?:&|$) - reject
-# > 腾讯视频广告视频分片（2026-10-31 21:41 抓包：广告封面 adsmind.gdtimg.com 被拦后，
-#   分片仍以裸 IP 为主机、omts.tc.qq.com 为路径拉取，素材ID 0b53k4a2iaab6yagc45scfvbwvyeurlqdjca）
-^http://(?:[0-9]{1,3}\.){3}[0-9]{1,3}/omts\.tc\.qq\.com/[^?]*_0b53k4a2iaab6yagc45scfvbwvyeurlqdjca\.f[0-9.]+\.ts(?:\.m3u8)?(?:\?|$) reject
-# > 【试验规则，默认关闭】广告分片通用特征：svp_1050 / gzc_1000173。
-#   正片取流可能共用同一路径特征，误拦会导致视频无法播放。
-#   启用方法：广告出现时取消注释，若正片可正常播放则保留；若正片黑屏则重新注释。
-# ^http://(?:[0-9]{1,3}\.){3}[0-9]{1,3}/omts\.tc\.qq\.com/[^?]*\/svp_1050\/ reject
-# ^http://(?:[0-9]{1,3}\.){3}[0-9]{1,3}/omts\.tc\.qq\.com/[^?]*gzc_1000173_[^?]*\.ts(?:\.m3u8)?(?:\?|$) reject
+# （2026-10-31 22:59：腾讯视频广告视频分片的素材ID精确规则与 svp_1050/gzc_1000173 试验规则
+#   已删除——两 App 重装后广告清零，一次性素材规则不再需要；若日后广告回归，
+#   抓包定位素材特征后可按同样方法重建）
 ^https?:\/\/pan-api\.bitqiu\.com\/activity\/getPromoteGuide reject-200
 ^https?:\/\/pan-api\.bitqiu\.com\/activity\/getPromoteGuide reject
 ^https?:\/\/pagead2\.googlesyndication\.com\/pagead\/ reject-img
