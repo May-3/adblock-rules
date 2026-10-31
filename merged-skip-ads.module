@@ -3,7 +3,8 @@
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
-#最后修改时间：2026-10-31 20:52（北京时间，UTC+8）
+#最后修改时间：2026-10-31 20:55（北京时间，UTC+8）
+#更新记录：20:55 百度网盘补漏——新增 cpc-service-square.58iclick.com 域名规则、/act/api/activitystatus 路径 mock；20:50 百度网盘 /buy/ad/ 路径 mock、advlion/vlion/66mobi/yunxish 等域名补漏；20:26 养基宝规则从 [Script] 区移回 [Rule] 区修复不生效问题
 
 [Rule]
 # >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
@@ -46,6 +47,8 @@ DOMAIN-SUFFIX,66mobi.com,REJECT
 DOMAIN-SUFFIX,app-analytics-services.com,REJECT
 DOMAIN,cpc-service-square.iggrowth.cn,REJECT
 DOMAIN,tdid.m.qq.com,REJECT
+# > CPC 广告服务第三次换域（2026-10-31 20:53 百度网盘抓包）
+DOMAIN,cpc-service-square.58iclick.com,REJECT
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # ----- 来源: blockAds.module -----
@@ -3788,6 +3791,7 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 ^https?:\/\/pan\.baidu\.com\/act\/v\d\/(bchannel|welfare)\/list reject
 ^https?:\/\/pan\.baidu\.com\/act\/api\/activityentry reject-200
 ^https?:\/\/pan\.baidu\.com\/act\/api\/activityentry reject
+^https?:\/\/pan\.baidu\.com\/act\/api\/activitystatus reject-200
 ^https?:\/\/pan\.baidu\.com\/act\/.+\/bchannel\/list reject
 # > 百度网盘自家广告系统接口（2026-10-31 20:17 抓包发现：广告走主域 /buy/ad/ 路径，
 #   域名规则无法拦截，按路径 mock 空响应让 App 判定无广告）
