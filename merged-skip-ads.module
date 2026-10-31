@@ -1,5 +1,5 @@
 #!name=跳广告合集·自维护合并版
-#!desc=最后修改时间：2026-10-31 18:42:12（北京时间，UTC+8）；adultraplus + blockAds 合并去重，含 B站开屏条目停用修复（2026-10-31真机验证）、腾讯优量汇补强规则与 QUIC 拦截。更新记录见下
+#!desc=最后修改时间：2026-10-31 18:42:13（北京时间，UTC+8）；adultraplus + blockAds 合并去重，含 B站开屏条目停用修复（2026-10-31真机验证）、腾讯优量汇补强规则与 QUIC 拦截。更新记录见下
 #!author=自维护(原始规则: yfamilys/fmz200)
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
@@ -17,6 +17,8 @@ DOMAIN-SUFFIX,ugdtimg.com,REJECT
 # > 腾讯开屏广告兜底补充域名
 DOMAIN-SUFFIX,adsmind.qq.com,REJECT
 DOMAIN-SUFFIX,tangram.qq.com,REJECT
+# 百青藤：视频素材 CDN
+DOMAIN-SUFFIX,bdvivid.com,REJECT
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # ----- 来源: blockAds.module -----
@@ -1742,7 +1744,7 @@ DOMAIN-SUFFIX,cm.ad.gifshow.com,REJECT
 DOMAIN-SUFFIX,cm.kwad.com,REJECT
 # > 快手
 # hostname = az4-api.ksapisrv.com, az4-api-idc.ksapisrv.com, az2-api.ksapisrv.com, az2-api-idc.ksapisrv.com, apissl.gifshow.com, apissl.ksapisrv.com, az2-api-js.gifshow.com, az2-live.ksapisrv.com
-# DOMAIN, js-ad.a.yximgs.com, REJECT
+DOMAIN, js-ad.a.yximgs.com, REJECT
 # > 快速问医生
 DOMAIN-SUFFIX,ax.120ask.com,REJECT
 DOMAIN-SUFFIX,eclick.120ask.com,REJECT
