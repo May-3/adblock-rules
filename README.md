@@ -11,7 +11,7 @@
   - HTTP/3(QUIC) 阻断规则，防止广告 SDK 走 UDP 443 绕过 MITM
     
 安装
-在 Surge / Loon / Stash 中通过 URL 安装模块：
+在 Surge / Loon / Stash /小火箭中通过 URL 安装模块：
 https://raw.githubusercontent.com/<用户名>/<仓库名>/main/merged-skip-ads.module
 国内可换 jsDelivr 加速：
 https://cdn.jsdelivr.net/gh/<用户名>/<仓库名>@main/merged-skip-ads.module
