@@ -9595,7 +9595,7 @@ DOMAIN-SUFFIX,shenshiads.com,REJECT
 DOMAIN-SUFFIX,adn-plus.com.cn,REJECT
 DOMAIN-SUFFIX,sigmob.cn,REJECT
 DOMAIN-SUFFIX,etoolads.cn,REJECT
-DOMAIN,sdktmp.hubcloud.com.cn,REJECT
+DOMAIN-SUFFIX,hubcloud.com.cn,REJECT
 # > 优酷
 # hostname = acs.youku.com, push.m.youku.com, un-acs.youku.com
 # 播放详情页,首页信息流,顶部tab,我的页面,评论区
