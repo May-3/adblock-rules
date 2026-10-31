@@ -3,8 +3,8 @@
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
-#最后修改时间：2026-10-31 21:18（北京时间，UTC+8）
-#更新记录：21:18 补 /api/resource/prefetch 素材预取 mock（开屏广告素材预缓存源头）；21:10 补 memberact/activity 运营位 mock；21:06 补 webcast-open 穿山甲配置与 analytics 竞价统计 mock；21:01 cpc-service-square 合并为 DOMAIN-KEYWORD；20:50-20:55 /buy/ad/ 路径 mock 及域名补漏；20:26 养基宝规则移回 [Rule] 区
+#最后修改时间：2026-10-31 21:39（北京时间，UTC+8）
+#更新记录：21:39 腾讯视频补漏——iacc.qq.com 自家广告接口、mdt.qq.com 监测(KEYWORD)、df.tanx.com、rdelivery.qq.com 运营下发、snowflake.qq.com 设备ID；21:18 百度网盘 prefetch 素材预取 mock；21:10 memberact 运营位 mock；21:06 webcast-open 穿山甲配置 mock；21:01 cpc-service-square 合并 KEYWORD 通配；20:50-20:55 /buy/ad/ 路径 mock 及域名补漏；20:26 养基宝规则移回 [Rule] 区
 
 [Rule]
 # >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
@@ -49,6 +49,18 @@ DOMAIN,tdid.m.qq.com,REJECT
 # > CPC 广告服务会轮换域名规避拦截（已见 yunxish/iggrowth/58iclick 三家），
 #   改用关键字一条通配所有换域（2026-10-31 21:01 确认工具支持 DOMAIN-KEYWORD）
 DOMAIN-KEYWORD,cpc-service-square,REJECT
+# > 腾讯视频（2026-10-31 21:34 真机抓包补漏）
+#   自家广告投放接口（iacc = 腾讯视频广告中心）
+DOMAIN-SUFFIX,iacc.qq.com,REJECT
+DOMAIN,iacc.rec.qq.com,REJECT
+#   腾讯广告监测（与上游已拦的 oth.str/oth.eve.mdt 同系，关键字覆盖全部子域）
+DOMAIN-KEYWORD,mdt.qq.com,REJECT
+#   阿里妈妈 Tanx ADX 上报（与上游已拦的 ef-dongfeng.tanx.com 同系）
+DOMAIN-SUFFIX,df.tanx.com,REJECT
+#   腾讯运营配置下发（开屏运营弹窗/活动配置走这里；其他腾讯系 App 的运营弹窗也会被拦）
+DOMAIN-SUFFIX,rdelivery.qq.com,REJECT
+#   腾讯雪花设备 ID（广告/追踪配套）
+DOMAIN,snowflake.qq.com,REJECT
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # ----- 来源: blockAds.module -----
