@@ -196,4 +196,4 @@ adblock-rules/
 ## 许可证与致谢
 
 - GPL-3.0。规则源自上述社区项目（wool_scripts 为 GPL-3.0），衍生分发遵循相同许可证。
-- 感谢 [@fmz200](https://github.com/fmz200) 的 wool_scripts、yfamilys 的 ultra+ 规则，以及各路分享抓包结果的网友 —— 这个文件里绝大多数条目都不是我原创的，我只是负责核对和删减。
+- 感谢 [@fmz200](https://github.com/fmz200) 的 wool_scripts、yfamilys 的 ultra+ 规则。
