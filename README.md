@@ -27,6 +27,7 @@
 - 自家广告投放 / 监测 / 运营域：`iacc.qq.com` / `iacc.rec.qq.com` / `mdt.qq.com`(KEYWORD) / `rdelivery.qq.com` / `snowflake.qq.com` / `galileotelemetry.tencent.com`
 - 阿里妈妈 Tanx ADX：`df.tanx.com`
 - 京东 IM 网关：`im-x.jd.com`（京东广告 SDK 附带组件）
+- 开屏广告分片：按 URL 里的素材/模板 ID 精确拦（广告 `svp_1050` + `gzc_1000173`，正片 `svp_50112` + `gzc_1000102`，互不影响）。这类分片走 HTTP 明文，host 甚至可能藏在路径里或直连 IP，只有按 ID 才拦得住
 
 ### 养基宝（深圳小多头）
 - 第三方广告平台域名补齐：`atdplus.cn` / `shenshiads.com` / `ad-scope.com.cn` / `adn-plus.com.cn` / `sigmob.cn` / `etoolads.cn` / `sdktmp.hubcloud.com.cn`（原先整域拦 `hubcloud.com.cn`，会误伤 `res1.hubcloud.com.cn` 等业务域，已收窄）
@@ -148,6 +149,7 @@ adblock-rules/
 
 ## 已知限制
 
+- **开屏广告可能是本地缓存**：拦截生效后 App 仍会播已缓存的素材。腾讯视频 2026-11-02 就是这么回事——`iacc.qq.com`(投放配置)、`rdelivery.qq.com`、`pgdt.gtimg.cn`(素材) 全部在拦，开屏照播；清掉 App 缓存后立刻消失。判断方法：清缓存后还在 = 规则没拦住；清缓存后消失 = 缓存，不是规则问题。腾讯视频这条已从源头处理：开屏分片（`svp_1050`/`gzc_1000173`）会被拒，清一次缓存后不会再下载回来。
 - **gRPC 类广告位只能放行**：B 站 `Teenagers/ModeStatus`、`View/TFInfo`、`ViewEndPage` 原本靠 `[Map Local]` 塞 base64 protobuf 假包，`[URL Rewrite]` 复现不了，已删除并恢复真实响应 —— 视频结尾页的推荐位可能重新出现，这是已知取舍。
 - 关键词与整域规则仍可能误伤小众 App，遇到问题请带上 App 名称 + 出问题的页面反馈。
 - 只覆盖上述 App 的主要广告链路；信息流内的原生广告、服务端已兜底的广告位不一定能清。
@@ -156,6 +158,8 @@ adblock-rules/
 
 ## 更新记录（新→旧）
 
+- 2026-11-02 01:10 腾讯视频开屏广告**真正修好**：抓包确认开屏分片走 HTTP、host 藏在路径里（`/omts.tc.qq.com/…/svp_1050/…gzc_1000173….ts`），域名规则天生拦不到。已按 `svp_1050` / `gzc_1000173` 重建精确拦截（正片 `svp_50112`/`gzc_1000102` 不受影响），清一次缓存后不会再预取
+- 2026-11-02 01:05 排障结论：腾讯视频开屏广告来自**本地缓存**（投放域 `iacc.qq.com` / `rdelivery.qq.com` / 素材域 `pgdt.gtimg.cn` 全程在拦），清 App 缓存后消失，与规则改动无关。同期把 `DOMAIN-KEYWORD,trace.qq.com` 恢复（此前误改为精确 `h.trace.qq.com`），并移除临时诊断用 MITM 主机
 - 2026-11-02 00:30 `[Map Local]` 全区迁移到 `[URL Rewrite]`（适配 Shadowrocket 等不支持该区的客户端）：删除 761 条与 `[URL Rewrite]` 完全重复的条目（行为不变），迁移 45 条（33 条 `reject-dict` / 12 条 `reject-200`），2 条 gRPC base64 mock 无法复现已删除；原有 100 条 `reject-img` 保持不动，并清掉 1 条无效规则（`hostname - reject`）。模块从 9 754 行降到 7 966 行，mock 不再依赖客户端特性
 - 2026-11-02 00:15 误杀审计修正：删 12 条整域 / 整 IP 误杀（`api.iqiyi`、`policy.video.iqiyi`、`static-s.iqiyi`、`httpdns.alicdn`、`180.76.76.200`×2、`203.107.1.1/24`、`umeng` 关键词、`m.suning`、`XiaoQiang`、`appcloud.zhihu`×2）；删 6 组功能性 URL 拦截（网盘 `certuser` `pmall`、优酷 `zconfig`、`119.29.29` HTTPDNS、B 站 `fawkes`、知乎 `guide`/`ecom`）；优酷与 B 站正则剔除功能性路径；`hubcloud` / `trace.qq.com` / `volc` / 穿山甲正则改窄；`umeng` 推送链路放行并补 `cnlogs` `oslogs` 精确域
 - 2026-11-01 23:06 删除 `resolv` 通配拦截：误杀 B 站备用解析，导致「网络错误」重试风暴（当晚 B 站卡顿与报错的真正根因）
@@ -192,4 +196,4 @@ adblock-rules/
 ## 许可证与致谢
 
 - GPL-3.0。规则源自上述社区项目（wool_scripts 为 GPL-3.0），衍生分发遵循相同许可证。
-- 感谢 [@fmz200](https://github.com/fmz200) 的 wool_scripts、yfamilys 的 ultra+ 规则，以及各路分享抓包结果的网友。
+- 感谢 [@fmz200](https://github.com/fmz200) 的 wool_scripts、yfamilys 的 ultra+ 规则，以及各路分享抓包结果的网友 —— 这个文件里绝大多数条目都不是我原创的，我只是负责核对和删减。
