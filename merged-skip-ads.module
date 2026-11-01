@@ -3,8 +3,9 @@
 #!icon=https://raw.githubusercontent.com/deezertidal/private/main/icons/startingad.png
 # 合并生成于 2026-10-31；上游: adultraplus(yfamilys 202610) + blockAds(fmz200 2026-10-30)
 # 维护方式: 改完后提交到自己的仓库，手机端刷新模块即可
-#最后修改时间：2026-11-01 10:49（北京时间，UTC+8）
+#最后修改时间：2026-11-01 23:06（北京时间，UTC+8）
 #更新记录（新→旧）：
+# 23:06 删除 resolv 通配拦截（合并自adultraplus，误杀B站备用解析致"网络错误"重试风暴；此为今晚B站卡顿+报错的真正根因）
 # 11-01 10:49 B站：评论接口 Reply/MainList 从 Sparkle 净化脚本摘除（修复评论区骨架屏卡死）
 # 11-01 10:37 B站：HTTPDNS放行 + hdslb/bilivideo/biliapi/bilibili 核心CDN直连（修复调度劣化导致的卡顿）
 # 22:59 删除腾讯视频素材ID精确规则与 svp_1050/gzc_1000173 试验规则（两App重装后广告清零）
@@ -5698,7 +5699,11 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 ^http:\/\/app\.api\.d3yuiw4\.com\/api\/app\/ad reject-200
 ^http:\/\/ads.?s?ervice(retry)?\.(kugou|kglink).(com|cn)\/v\d\/ reject-200
 ^http:\/\/ad\.shunchangzhixing\.com\/getAd reject-dict
-^http:\/\/[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){1,4}(:\d+)?\/\w+\/resolv reject-200
+# > 2026-11-01 23:06 删除上一版合并自 adultraplus 的 resolv 通配拦截：
+#   它把 B 站备用解析(http://203.119.x.x/191607/resolve?host=...)全部返回空，
+#   导致图片/评论域名解析失败、"网络错误"重试风暴。本模块去广告全在域名层，
+#   不依赖 DNS 拦截，此规则弊大于利。
+# ^http:\/\/[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){1,4}(:\d+)?\/\w+\/resolv reject-200
 ^http:\/\/59\.82\.113\.10\/amdc\/mobileDispatch\?appkey=213807& reject-dict
 ^http:\/\/54\.222\.159\.138:8053\/httpdns\/ reject
 ^http:\/\/139\.196\.12\.179:8053\/httpdns\/ reject
