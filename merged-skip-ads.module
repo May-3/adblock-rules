@@ -3504,6 +3504,11 @@ http-response ^https:\/\/grpc\.biliapi\.net\/bilibili\.app\.(interface\.v1\.(Tee
 # >>>>>>>>>>>>>>> 🟣 <<<<<<<<<<<<<<
 
 [URL Rewrite]
+# >>>>>>>>>> 养基宝 自家广告配置（2026-11-04 抓包定位，置于区首优先匹配） >>>>>>>>>>
+# 第三方 SDK 已全拒，但开屏空壳+倒计时仍弹：配置来自自家接口 /content/v1/ad/config
+# 依赖 [MITM] 中的 app-api.yangjibao.com（HTTPS 需解密才能按 URL 匹配）
+^https?:\/\/app-api\.yangjibao\.com\/content\/v1\/ad\/config reject-dict
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # >>>>>>>>>> 【自维护新增】B站主站APP开屏广告 >>>>>>>>>>
 # B站开屏改由 [Script] 的 BiliSplashSchedule 处理，避免提前拒绝响应
 ^https?:\/\/app\.bilibili\.com\/x\/v2\/feed\/index\/story reject-dict
@@ -6903,10 +6908,6 @@ https://support.you.163.com/appversync/check.do - reject
 ^https?:\/\/.+gzc_1000173 reject
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-# >>>>>>>>>> 养基宝 自家广告配置（2026-11-04 抓包定位） >>>>>>>>>>
-# 第三方 SDK（穿山甲/优量汇/sigmob）已全部拒死，但开屏空壳+倒计时仍弹：
-# 配置来自自家接口 GET /content/v1/ad/config，mock 空对象让它判定“无广告配置”
-^https:\/\/app-api\.yangjibao\.com\/content\/v1\/ad\/config reject-dict
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 [Body Rewrite]
 http-response-jq http:\/\/dili.sqcosmos.com\/jiekou\/mains\/p\d+.html '.album |= map(select(.id != "4154" and .id != "4165"))'
