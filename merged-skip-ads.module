@@ -100,6 +100,26 @@ DOMAIN,grpc.biliapi.net,DIRECT
 # > 主 API（解析偶发海外 IP 时防落到代理；不影响上游对 biliapi.net 广告子域的拦截）
 DOMAIN-SUFFIX,api.bilibili.com,DIRECT
 DOMAIN-SUFFIX,app.bilibili.com,DIRECT
+# ============================================================
+# 七、中国移动 App（UA: ChinaMobile/12.5.6）
+#    2026-11-12 00:14:39 真机启动序列抓包：广告全部走 biz-orange 统一网关，
+#    核心业务（话费/流量/办业务）走 SHS/SHE/WN 等路径，本段不影响。
+#    该域已开 MITM，URL-REGEX 可正常命中。
+# ============================================================
+# > 水滴广告下发（路径名含 Adver，最明确的一条）
+URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/DN/dropsAdverService/",REJECT
+# > 启动留存/挽留推广页（启动后约 1.4 秒请求，多为优惠弹窗）
+#   ⚠️ 若想保留"销户/降档挽留提示"，注释下一行
+URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/DN/detainment/",REJECT
+# > toast 营销下发（DH / DN 两个网关都有）
+#   ⚠️ 若发现话费不足等正常提示消失，注释下一行
+URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/D[NH]/toast/",REJECT
+# > 首页顶部运营位（轮播/活动位）
+#   ⚠️ 若首页顶部功能入口缺失，注释下一行
+URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/DN/homePage/getTopAreaList",REJECT
+# > 直播悬浮窗推广
+URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/DA/liveSuspension/",REJECT
+
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # ----- 来源: blockAds.module -----
