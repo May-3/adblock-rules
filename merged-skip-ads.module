@@ -4150,11 +4150,34 @@ http-response ^https:\/\/grpc\.biliapi\.net\/bilibili\.app\.(interface\.v1\.(Tee
 ^https?:\/\/pan\.baidu\.com\/component\/view\/(1510|1130)\?vip - reject
 ^https?:\/\/ndstatic\.cdn\.bcebos\.com\/activity\/welfare\/js\/.+\.js - reject
 ^https?:\/\/ndstatic\.cdn\.bcebos\.com\/activity\/welfare\/index\.html - reject
-^https?:\/\/staticsns\.cdn\.bcebos\.com\/amis\/.+/banner.png - reject
+# > 修正：原写法 /amis/.+/banner.png 要求 banner.png 单独成路径段，
+#   实际文件名是"十出一banner.png"(URL 编码后前面没有斜杠)，故永不命中。改掉末尾斜杠。
+^https?:\/\/staticsns\.cdn\.bcebos\.com\/amis\/.+banner\.png - reject
 ^https?:\/\/issuecdn\.baidupcs\.com\/issue\/netdisk\/guanggao - reject
 ^https?:\/\/update\.pan\.baidu\.com\/statistics - reject
 ^https?:\/\/fc-video\.cdn\.bcebos\.com - reject
 ^https?:\/\/rp\.hpplay\.cn\/logouts - reject
+
+# ---------- 2026-11-11 23:23 真机日志补漏（网盘 13.36.6 / iOS 27.0.1） ----------
+# 实测：本次网盘发起 114 个不同接口路径，上面规则只命中 5 个，其余 109 个全部放行。
+# 下列为广告相关且确认放行的接口，按启动链路顺序排列。
+# > 广告配置 + 取广告物料（23:23:54.601 -> 23:23:56.199，27 次请求 0 拦截）
+^https?:\/\/pan\.baidu\.com\/buy\/ad\/conf - reject
+^https?:\/\/pan\.baidu\.com\/buy\/ad\/get - reject
+# > 会员广告 DSP（启动最早一批请求，23:23:52.367）
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/advertise\/dsp - reject
+# > 活动红点 / 权益运营位
+^https?:\/\/pan\.baidu\.com\/act\/api\/activitystatus - reject
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/memberact\/activity - reject
+# > 会员购买引导弹窗
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/guide - reject
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/proxy\/guide - reject
+# > 首页信息流 / 金刚区 / 搜索框推荐（运营位；若首页出现空白块或入口缺失，注释掉本段五行）
+^https?:\/\/pan\.baidu\.com\/feed\/kingkongdistrict - reject
+^https?:\/\/pan\.baidu\.com\/feed\/cardinfos - reject
+^https?:\/\/pan\.baidu\.com\/recommend\/searchbox\/bottom - reject
+^https?:\/\/pan\.baidu\.com\/aisearch\/agent\/memorycenter\/getrecommendcards - reject
+^https?:\/\/pan\.baidu\.com\/imagestory\/miner\/api\/v2\/picrecommend - reject
 
 # > 北京首汽
 # hostname = gateway.shouqiev.com
@@ -4620,7 +4643,7 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 - reject
 
 # > 肯德基
 # hostname = res.kfc.com.cn
-^https?:\/\/res\.kfc\.com.\cn\/advertisement\/ - reject
+^https?:\/\/res\.kfc\.com\.cn\/advertisement\/ - reject
 
 # > 快递100
 # hostname = p.kuaidi100.com, video-dsp.pddpic.com, t-dsp.pinduoduo.com, images.pinduoduo.com
