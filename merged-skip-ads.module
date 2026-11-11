@@ -4138,46 +4138,54 @@ http-response ^https:\/\/grpc\.biliapi\.net\/bilibili\.app\.(interface\.v1\.(Tee
 
 # > 百度网盘
 # hostname = pan.baidu.com, ndstatic.cdn.bcebos.com, staticsns.cdn.bcebos.com, issuecdn.baidupcs.com, update.pan.baidu.com, fc-video.cdn.bcebos.com, rp.hpplay.cn
+# 2026-11-11 23:23 真机日志（网盘 13.36.6 / iOS 27.0.1）核对后重写本块。
+# 约定：reject-200 = 返回 200 空响应体，让 App 判定"服务端说没有广告"；
+#       不用 - reject 直接断连，是因为断连会让 App 走网络异常分支并触发重试/回退本地缓存。
+#
+# > 广告位查询（\d\.\d 覆盖 1.0/2.0 等版本号；adx 必须先于 ad，否则被 ad 前缀吃掉）
 ^https?:\/\/pan\.baidu\.com\/rest\/\d\.\d\/pcs\/adx - reject
-^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/pcs\/ad - reject
-^https?:\/\/pan\.baidu\.com\/act\/v\d\/(bchannel|welfare)\/list - reject
-^https?:\/\/pan\.baidu\.com\/act\/api\/activityentry - reject
-^https?:\/\/pan\.baidu\.com\/pmall\/order\/privilege\/info - reject
-^https?:\/\/pan\.baidu\.com\/rest\/.+\/pcs\/adx - reject
-^https?:\/\/pan\.baidu\.com\/api\/useractivity\/activity - reject
+^https?:\/\/pan\.baidu\.com\/rest\/\d\.\d\/pcs\/ad reject-200
+# > 网盘自家广告系统（启动链路 buy/ad/conf -> buy/ad/get，走主域只能按路径拦）
+^https?:\/\/pan\.baidu\.com\/buy\/ad\/conf reject-200
+^https?:\/\/pan\.baidu\.com\/buy\/ad\/get reject-200
+^https?:\/\/pan\.baidu\.com\/buy\/ad\/analytics - reject
+# > 开屏素材预取接口：素材被提前缓存到沙盒，导致清完缓存一启动又长出来、冷启动断网也照样播
+^https?:\/\/pan\.baidu\.com\/api\/resource\/prefetch reject-200
+# > 网盘自家 analytics 上报穿山甲竞价开屏曝光（只匹配 iOS_bidding_pv 类型，不影响普通统计）
+^https?:\/\/pan\.baidu\.com\/api\/analytics\?(?:[^#]*&)?type=iOS_bidding_pv_iphone(?:&|$) - reject
+# > 活动 / 运营位
+^https?:\/\/pan\.baidu\.com\/act\/api\/activityentry reject-200
+^https?:\/\/pan\.baidu\.com\/act\/api\/activitystatus reject-200
+^https?:\/\/pan\.baidu\.com\/act\/v\d\/(bchannel|welfare)\/list reject-200
 ^https?:\/\/pan\.baidu\.com\/act\/.+\/bchannel\/list - reject
-^https?:\/\/pan\.baidu\.com\/api\/certuser\/get - reject
+^https?:\/\/pan\.baidu\.com\/api\/useractivity\/activity - reject
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/memberact\/activity reject-200
+^https?:\/\/pan\.baidu\.com\/pmall\/order\/privilege\/info reject-200
+^https?:\/\/pan\.baidu\.com\/api\/certuser\/get reject-200
 ^https?:\/\/pan\.baidu\.com\/component\/view\/(1510|1130)\?vip - reject
+# > 会员购买引导弹窗 / 会员广告 DSP
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/guide reject-200
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/proxy\/guide reject-200
+^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/advertise\/dsp reject-200
+# > 首页信息流 / 金刚区 / 搜索框推荐（若首页出现空白块或功能入口缺失，注释掉本段五行）
+^https?:\/\/pan\.baidu\.com\/feed\/kingkongdistrict reject-200
+^https?:\/\/pan\.baidu\.com\/feed\/cardinfos reject-200
+^https?:\/\/pan\.baidu\.com\/recommend\/searchbox\/bottom reject-200
+^https?:\/\/pan\.baidu\.com\/aisearch\/agent\/memorycenter\/getrecommendcards reject-200
+^https?:\/\/pan\.baidu\.com\/imagestory\/miner\/api\/v2\/picrecommend reject-200
+# > 穿山甲 SDK 远程配置走抖音开放平台域（只匹配网盘自己的 package_name，不影响其他 App）
+^https?:\/\/webcast-open\.douyin\.com\/webcast\/openapi\/pangle\/setting\/?\?(?:[^#]*&)?package_name=com\.baidu\.netdisk(?:&|$) - reject
+# > 素材 CDN
 ^https?:\/\/ndstatic\.cdn\.bcebos\.com\/activity\/welfare\/js\/.+\.js - reject
 ^https?:\/\/ndstatic\.cdn\.bcebos\.com\/activity\/welfare\/index\.html - reject
-# > 修正：原写法 /amis/.+/banner.png 要求 banner.png 单独成路径段，
-#   实际文件名是"十出一banner.png"(URL 编码后前面没有斜杠)，故永不命中。改掉末尾斜杠。
+# 修正：原写法 /amis/.+/banner.png 要求 banner.png 单独成路径段，
+# 实际文件名是"十出一banner.png"(URL 编码后前面没有斜杠)，故永不命中。
 ^https?:\/\/staticsns\.cdn\.bcebos\.com\/amis\/.+banner\.png - reject
 ^https?:\/\/issuecdn\.baidupcs\.com\/issue\/netdisk\/guanggao - reject
+^https?:\/\/issuecdn\.baidupcs\.com\/issue\/netdisk\/ts_ad\/ reject-200
 ^https?:\/\/update\.pan\.baidu\.com\/statistics - reject
 ^https?:\/\/fc-video\.cdn\.bcebos\.com - reject
 ^https?:\/\/rp\.hpplay\.cn\/logouts - reject
-
-# ---------- 2026-11-11 23:23 真机日志补漏（网盘 13.36.6 / iOS 27.0.1） ----------
-# 实测：本次网盘发起 114 个不同接口路径，上面规则只命中 5 个，其余 109 个全部放行。
-# 下列为广告相关且确认放行的接口，按启动链路顺序排列。
-# > 广告配置 + 取广告物料（23:23:54.601 -> 23:23:56.199，27 次请求 0 拦截）
-^https?:\/\/pan\.baidu\.com\/buy\/ad\/conf - reject
-^https?:\/\/pan\.baidu\.com\/buy\/ad\/get - reject
-# > 会员广告 DSP（启动最早一批请求，23:23:52.367）
-^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/advertise\/dsp - reject
-# > 活动红点 / 权益运营位
-^https?:\/\/pan\.baidu\.com\/act\/api\/activitystatus - reject
-^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/memberact\/activity - reject
-# > 会员购买引导弹窗
-^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/guide - reject
-^https?:\/\/pan\.baidu\.com\/rest\/2\.0\/membership\/proxy\/guide - reject
-# > 首页信息流 / 金刚区 / 搜索框推荐（运营位；若首页出现空白块或入口缺失，注释掉本段五行）
-^https?:\/\/pan\.baidu\.com\/feed\/kingkongdistrict - reject
-^https?:\/\/pan\.baidu\.com\/feed\/cardinfos - reject
-^https?:\/\/pan\.baidu\.com\/recommend\/searchbox\/bottom - reject
-^https?:\/\/pan\.baidu\.com\/aisearch\/agent\/memorycenter\/getrecommendcards - reject
-^https?:\/\/pan\.baidu\.com\/imagestory\/miner\/api\/v2\/picrecommend - reject
 
 # > 北京首汽
 # hostname = gateway.shouqiev.com
