@@ -102,23 +102,27 @@ DOMAIN-SUFFIX,api.bilibili.com,DIRECT
 DOMAIN-SUFFIX,app.bilibili.com,DIRECT
 # ============================================================
 # 七、中国移动 App（UA: ChinaMobile/12.5.6）
-#    2026-11-12 00:14:39 真机启动序列抓包：广告全部走 biz-orange 统一网关，
-#    核心业务（话费/流量/办业务）走 SHS/SHE/WN 等路径，本段不影响。
-#    该域已开 MITM，URL-REGEX 可正常命中。
+#    2026-11-12 真机抓包：广告全部走 biz-orange 统一网关。
+#    核心业务（话费/流量/办业务）走 SHS/SHE/WN 等路径，不受影响。
+#
+#    ⚠️ 重要：路径级拦截不能写在本段（[Rule]）。
+#    实测 [Rule] 段的 URL-REGEX 会被小火箭忽略，请求直接落到最后的
+#    GEOIP,CN,DIRECT 兜底，规则形同虚设。
+#    因此本 App 的 5 条路径规则放在 [URL Rewrite] 段开头的
+#    「中国移动 App 专块」，用 reject-200（返回 200 空体，避免断连重试）。
+#    本段只保留域名级规则。
 # ============================================================
-# > 水滴广告下发（路径名含 Adver，最明确的一条）
-URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/DN/dropsAdverService/",REJECT
-# > 启动留存/挽留推广页（启动后约 1.4 秒请求，多为优惠弹窗）
-#   ⚠️ 若想保留"销户/降档挽留提示"，注释下一行
-URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/DN/detainment/",REJECT
-# > toast 营销下发（DH / DN 两个网关都有）
-#   ⚠️ 若发现话费不足等正常提示消失，注释下一行
-URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/D[NH]/toast/",REJECT
-# > 首页顶部运营位（轮播/活动位）
-#   ⚠️ 若首页顶部功能入口缺失，注释下一行
-URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/DN/homePage/getTopAreaList",REJECT
-# > 直播悬浮窗推广
-URL-REGEX,"^https?://client\.app\.coc\.10086\.cn/biz-orange/DA/liveSuspension/",REJECT
+
+# ============================================================
+# 八、懂车帝（UA 不显 dongchedi；接口走 dcarapi.com / dcarvod.com）
+#    2026-11-12 00:2x 四次启动抓包：
+#    v26-dcar-ad.dcarvod.com 75 次、v3-dcar-ad 45 次、v11-dcar-ad 15 次，
+#    主机名直接含 ad，是自家广告素材 CDN。穿山甲/GDT 已被上游规则拦掉。
+# ============================================================
+# > 自家广告素材 CDN（一条 suffix 覆盖 v3/v11/v26 全部变体）
+#   ⚠️ 若懂车帝出现图片/视频加载异常，注释下一行
+DOMAIN-SUFFIX,dcar-ad.dcarvod.com,REJECT
+
 
 # <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
@@ -4055,6 +4059,29 @@ DOMAIN-SUFFIX,push-android.myzaker.com,REJECT
 
 # >>>>>>>>>>>>>>> 🟣 <<<<<<<<<<<<<<
 [URL Rewrite]
+
+# >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
+# ============================================================
+# 中国移动 App 专块（UA: ChinaMobile/12.5.6）
+# 2026-11-12 00:14:39 真机启动序列定位；广告全走 biz-orange 网关。
+# 用 reject-200 而非 - reject：断连会让 App 重试并可能回退本地缓存配置。
+# 每条都可单独注释回滚，注释里标了对应的功能影响。
+# ============================================================
+# > 水滴广告下发（路径名含 Adver，最明确的一条）
+^https?:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/DN\/dropsAdverService\/ reject-200
+# > 启动留存/挽留推广页（启动后约 1.4 秒请求，多为优惠弹窗）
+#   ⚠️ 若想保留"销户/降档挽留提示"，注释下一行
+^https?:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/DN\/detainment\/ reject-200
+# > toast 营销下发（DH / DN 两个网关都有）
+#   ⚠️ 若发现话费不足等正常提示消失，注释下一行
+^https?:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/D[NH]\/toast\/ reject-200
+# > 首页顶部运营位（轮播/活动位）
+#   ⚠️ 若首页顶部功能入口缺失，注释下一行
+^https?:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/DN\/homePage\/getTopAreaList reject-200
+# > 直播悬浮窗推广
+^https?:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/DA\/liveSuspension\/ reject-200
+# <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
+
 # >>>>>>>>>>>>>>> ✅ !! ✅ <<<<<<<<<<<<<<
 
 
