@@ -101,7 +101,7 @@ DOMAIN,grpc.biliapi.net,DIRECT
 DOMAIN-SUFFIX,api.bilibili.com,DIRECT
 DOMAIN-SUFFIX,app.bilibili.com,DIRECT
 # ============================================================
-# 八、懂车帝（UA 不显 dongchedi；接口走 dcarapi.com / dcarvod.com）
+# 七、懂车帝（UA 不显 dongchedi；接口走 dcarapi.com / dcarvod.com）
 #    2026-11-12 00:2x 四次启动抓包：
 #    v26-dcar-ad.dcarvod.com 75 次、v3-dcar-ad 45 次、v11-dcar-ad 15 次，
 #    主机名直接含 ad，是自家广告素材 CDN。穿山甲/GDT 已被上游规则拦掉。
@@ -4046,6 +4046,10 @@ DOMAIN-SUFFIX,push-android.myzaker.com,REJECT
 
 # >>>>>>>>>>>>>>> 🟣 <<<<<<<<<<<<<<
 [URL Rewrite]
+
+# >>>>>>>>>> 【自维护新增】开始 >>>>>>>>>>
+
+# <<<<<<<<<< 【自维护新增】结束 <<<<<<<<<<
 
 # >>>>>>>>>>>>>>> ✅ !! ✅ <<<<<<<<<<<<<<
 
